@@ -12,3 +12,5 @@ I skipped the step where credit-card validation were needed, just because i didn
 Some of the following steps didn´t specify if I were supposed to follow them, or if it was only for information. 
 So i didn´t insert any data into the database but the database-config with postgres worked fine.
 
+Link to Heroku-app:
+https://stark-plateau-79637.herokuapp.com/
