@@ -21,9 +21,6 @@ public class Person {
     private Long id;
     private String name;
 
-    @ManyToMany()
-    private Set<Address> address = new HashSet<>();
-
     @OneToMany
     private Set<CreditCard> creditCards = new HashSet<>();
 
