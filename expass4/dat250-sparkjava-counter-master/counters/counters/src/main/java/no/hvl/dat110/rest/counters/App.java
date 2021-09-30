@@ -1,11 +1,14 @@
 package no.hvl.dat110.rest.counters;
 
 import static spark.Spark.after;
+import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.port;
+import static spark.Spark.post;
 import static spark.Spark.put;
 
 import com.google.gson.Gson;
+import java.util.HashMap;
 
 /**
  * Hello world!
@@ -13,8 +16,10 @@ import com.google.gson.Gson;
  */
 public class App {
 	
-	static Counters counters = null;
-	
+	static HashMap<Integer, Todo> todos = new HashMap<>();
+	static Gson gson = new Gson();
+
+
 	public static void main(String[] args) {
 
 		if (args.length > 0) {
@@ -23,31 +28,42 @@ public class App {
 			port(8080);
 		}
 
-		counters = new Counters();
-		
 		after((req, res) -> {
   		  res.type("application/json");
   		});
 		
-		get("/hello", (req, res) -> "Hello World!");
-		
-        get("/counters", (req, res) -> counters.toJson());
- 
-        get("/counters/red", (req, res) -> counters.getRed());
+		get("/", (req, res) -> "Hello World!");
 
-        get("/counters/green", (req, res) -> counters.getGreen());
+        get("/todo", (req, res) -> gson.toJson(todos));
 
-        // TODO: put for green/red and in JSON
-        // variant that returns link/references to red and green counter
-        put("/counters", (req,res) -> {
-        
-        	Gson gson = new Gson();
-        	
-        	counters = gson.fromJson(req.body(), Counters.class);
-        
-            return counters.toJson();
-        	
-        });
-    }
-    
+        get("/todo/:id", (req, res) -> {
+        	int id = Integer.parseInt(req.params("id"));
+        	return todos.get(id).toJson();
+		});
+
+        delete("todo/:id", (req,res) -> {
+        	int id = Integer.parseInt(req.params("id"));
+        	return todos.remove(id).toJson();
+		});
+
+		put("/todo/:id", (req,res) -> {
+			int id = Integer.parseInt(req.params("id"));
+			todos.put(id, gson.fromJson(req.body(), Todo.class));
+			return todos.get(id).toJson();
+
+		});
+
+		post("/todo", (req,res) -> {
+			//id will increment by one more than the previous
+			int id = todos.size() + 1;
+			todos.put(id, gson.fromJson(req.body(), Todo.class));
+			return todos.get(id).toJson();
+		});
+
+		todos.put(0, new Todo("Clean", "Clean the house"));
+		todos.put(1, new Todo("Do assignment", "Complete assignment in DAT250"));
+
+
+	}
+
 }
